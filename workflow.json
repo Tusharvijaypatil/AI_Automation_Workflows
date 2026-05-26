@@ -1,0 +1,2079 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_GOOGLE_SHEET_ID",
+          "mode": "list",
+          "cachedResultName": "Job Data",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/YOUR_GOOGLE_SHEET_ID/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Linkedin",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/YOUR_GOOGLE_SHEET_ID/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Job Title": "={{ $json.original_title }}",
+            "Job City": "={{ $json.city }}",
+            "Job Type": "={{ $json.job_type }}",
+            "Company Name": "={{ $json.company_name }}",
+            "Posted Time": "={{ $json.posted_date }}",
+            "Candidate Applied": "={{ $json.applicants }}",
+            "Job URL": "={{ $json.linkedin_url }}",
+            "Experience Req": "={{ $json.experience }}",
+            "Hiring Manager URL": "={{ $json.hiring_manager_linkedin_url }}",
+            "DISCRIPTION": "={{ $json.description_text }}",
+            "Skills Req": "={{ $json.preferred_skills }}",
+            "Company Size": "={{ $json.company_size }}",
+            "Job ID": "={{ $json.job_id }}",
+            "Company Industry": "={{ $json.company_industry }}",
+            "Company Website": "={{ $json.company_website }}"
+          },
+          "matchingColumns": [
+            "Job ID"
+          ],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        688,
+        672
+      ],
+      "id": "bac17397-e62c-48af-b13f-044f19f7cf32",
+      "name": "Append or update row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "",
+          "name": ""
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// LinkedIn job JSON parser - extracts budget, experience, skills, hiring manager url. See repo for full source."
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        480,
+        672
+      ],
+      "id": "f6a5c089-3b3e-4b94-8b57-f4b61fb87200",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "operation": "Run actor and get dataset",
+        "actorId": {
+          "__rl": true,
+          "value": "YOUR_APIFY_ACTOR_ID",
+          "mode": "id"
+        },
+        "customBody": "{\n  \"easyApply\": false,\n  \"employmentType\": [\"full-time\"],\n  \"experienceLevel\": [\"mid-senior\", \"director\"],\n  \"locations\": [\"india\"],\n  \"maxItems\": 100,\n  \"postedLimit\": \"24h\",\n  \"sortBy\": \"date\",\n  \"workplaceType\": [\"remote\", \"hybrid\", \"office\"]\n}"
+      },
+      "type": "@apify/n8n-nodes-apify.apify",
+      "typeVersion": 1,
+      "position": [
+        272,
+        672
+      ],
+      "id": "60c8c880-a2ca-4510-8e11-2b1a82a77bf5",
+      "name": "Run an Actor and get dataset",
+      "credentials": {
+        "apifyApi": {
+          "id": "",
+          "name": ""
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_GOOGLE_SHEET_ID",
+          "mode": "list",
+          "cachedResultName": "Job Data",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/YOUR_GOOGLE_SHEET_ID/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 855400704,
+          "mode": "list",
+          "cachedResultName": "Linkedin Company",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/YOUR_GOOGLE_SHEET_ID/edit#gid=855400704"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Apollo Status",
+              "lookupValue": "PENDING"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1312,
+        672
+      ],
+      "id": "6a80d9b5-ab6f-4d4d-8c40-f439a128eb9a",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "",
+          "name": ""
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.apollo.io/api/v1/mixed_people/api_search",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-api-key",
+              "value": "YOUR_APOLLO_API_KEY"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "Cache-Control",
+              "value": "no-cache"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"q_organization_domains\": \"{{ $json.domain }}\",\n  \"person_titles\": [\"Founder\", \"Co-Founder\", \"CEO\", \"COO\", \"CTO\", \"CHRO\", \"VP HR\", \"HR Head\", \"HR Director\", \"Head Talent Acquisition\"],\n  \"per_page\": 10,\n  \"page\": 1\n}",
+        "options": {
+          "batching": {
+            "batch": {
+              "batchSize": 1
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1936,
+        672
+      ],
+      "id": "1e935e7a-b0c7-40a4-9cf8-4c26927472ed",
+      "name": "HTTP Request",
+      "retryOnFail": false,
+      "maxTries": null,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Categorize Apollo people results by title (CEO/CTO/HR Head/etc). See repo for full source."
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2144,
+        672
+      ],
+      "id": "5ddc1cb0-7d81-445c-90e3-f04ba9824b09",
+      "name": "Code in JavaScript2",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "jsCode": "// Clean company website into a bare domain for Apollo lookup. See repo for full source."
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1728,
+        672
+      ],
+      "id": "e7fb34c4-6656-4c81-858c-6b3f5c3781f2",
+      "name": "Clean Domain"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.apollo.io/api/v1/people/match",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-api-key",
+              "value": "YOUR_APOLLO_API_KEY"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "Cache-Control",
+              "value": "no-cache"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"id\": \"{{ $json.person_id }}\",\n  \"reveal_personal_emails\": false,\n  \"reveal_phone_number\": false\n}",
+        "options": {
+          "batching": {
+            "batch": {
+              "batchSize": 1
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        2352,
+        672
+      ],
+      "id": "15f079a8-1f9f-49d6-9817-aa2ce05a52b2",
+      "name": "HTTP Request1",
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Map Apollo person-match result into clean contact fields. See repo for full source."
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2560,
+        672
+      ],
+      "id": "66210136-441d-4a7b-bb67-de735fe1be27",
+      "name": "Code in JavaScript1"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 * 9-18 * * 1-6"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -448,
+        1056
+      ],
+      "id": "66fcd81a-dc4b-4a4a-aa0c-5a1c2bcfab5e",
+      "name": "Schedule Trigger2"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_GOOGLE_SHEET_ID",
+          "mode": "list"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1147553068,
+          "mode": "list",
+          "cachedResultName": "Employee Data"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Apollo Status",
+              "lookupValue": "DONE"
+            },
+            {
+              "lookupColumn": "Email Sent "
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -272,
+        1056
+      ],
+      "id": "ba22cb58-5506-461a-824c-4bb953bfdbc6",
+      "name": "Get row(s) in sheet3",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "",
+          "name": ""
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "6f2dd53e-0e58-4f82-8210-25abc481103d",
+              "name": "to_email",
+              "value": "={{ $json[\"Contact Email\"] }}",
+              "type": "string"
+            },
+            {
+              "id": "32659d1c-b909-4aa2-bbed-0fbd1c029576",
+              "name": "Subject",
+              "value": "=Hiring at {{ $json[\"Company Name\"] }}?\n",
+              "type": "string"
+            },
+            {
+              "id": "343e1531-668b-4f97-aef7-48a31ee4809d",
+              "name": "body_html",
+              "value": "=<!DOCTYPE html>\n<html>\n  <body style=\"font-family: Arial, Helvetica, sans-serif; font-size:14px; color:#000; line-height:1.6;\">\n    <p>Hi {{ $json[\"Contact Name\"] }},</p>\n    <p>I noticed {{ $json[\"Company Name\"] }} is actively hiring and wanted to reach out.</p>\n    <p>[ Your one-line intro + who you are. ]</p>\n    <p><b>What we typically help teams with:</b></p>\n    <ul style=\"margin: 0 0 14px 18px; padding:0;\">\n      <li>[ Value prop bullet 1 ]</li>\n      <li>[ Value prop bullet 2 ]</li>\n      <li>[ Value prop bullet 3 ]</li>\n    </ul>\n    <p>Would you be open to a quick 15-minute conversation this or next week?</p>\n    <p>Best,<br/>[ Your Name ]<br/>[ Your Company ] &middot; [ your-email@example.com ]</p>\n  </body>\n</html>\n",
+              "type": "string"
+            },
+            {
+              "id": "48e8c71d-6564-49f6-8cd4-3befcafce241",
+              "name": "data",
+              "value": "",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        544,
+        992
+      ],
+      "id": "5e66b0ec-1ba8-4e04-aa5b-d14c4b47cde6",
+      "name": "Edit Fields2"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json.to_email }}",
+        "subject": "={{ $json.Subject }}",
+        "message": "={{ $json.body_html }}",
+        "options": {
+          "appendAttribution": false,
+          "senderName": "Your Name"
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        768,
+        992
+      ],
+      "id": "453e7ff1-1118-4f14-9c6a-6fb335a6882a",
+      "name": "Send a message",
+      "webhookId": "7da1ca0c-f0b9-47a5-829f-367955b9024d",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "",
+          "name": ""
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "Email Sender\n",
+        "height": 416,
+        "width": 1744,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -560,
+        928
+      ],
+      "typeVersion": 1,
+      "id": "c991c8e9-1cb6-4d25-ae0c-132bd88ab94b",
+      "name": "Sticky Note3",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "content": "APOLLO PEOPLE FINDER\n",
+        "height": 304,
+        "width": 2208,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1024,
+        576
+      ],
+      "typeVersion": 1,
+      "id": "e07bff45-e1d4-4ec9-b1a6-7fba59e3fa21",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "SCRAP LINKEDIN TECH JOBS\n",
+        "height": 304,
+        "width": 1072,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -176,
+        592
+      ],
+      "typeVersion": 1,
+      "id": "2648bfae-2117-40aa-a33f-3f2f6a258092",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "99b2ff71-c9ca-4bf9-bcdb-851290fdcf7f",
+              "leftValue": "={{ $json[\"Contact Email\"] }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        320,
+        1008
+      ],
+      "id": "b710469e-c3e7-416c-adf7-0e9a8b241c7a",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -64,
+        1056
+      ],
+      "id": "d77ff082-115f-433a-8608-2e25c691f710",
+      "name": "Loop Over Items1"
+    },
+    {
+      "parameters": {
+        "amount": 2.5,
+        "unit": "minutes"
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        176,
+        1008
+      ],
+      "id": "6cad0785-fbee-4618-a84b-5a9bf150e2ba",
+      "name": "Wait",
+      "webhookId": "f4479652-60eb-4304-b9d1-aaab7eec3da7"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_GOOGLE_SHEET_ID",
+          "mode": "list"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1147553068,
+          "mode": "list",
+          "cachedResultName": "Employee Data"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "id": "={{ $json.id }}",
+            "thread id": "={{ $json.threadId }}",
+            "Email Sent ": "={{ $json.labelIds[0] }}",
+            "Last Emailed At": "={{ $now.toFormat('yyyy-MM-dd') }}",
+            "Next Follow-up At": "={{ $now.plus({ days: 4 }).toFormat('yyyy-MM-dd') }}",
+            "Contact LinkedIn": "={{ $('Wait').item.json['Contact LinkedIn'] }}",
+            "Sequence Stage": "0"
+          },
+          "matchingColumns": [
+            "Contact LinkedIn"
+          ],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        976,
+        992
+      ],
+      "id": "78253ab2-91b6-4b42-969b-3ba702b89d5e",
+      "name": "Append or update row in sheet2",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "",
+          "name": ""
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 * 9-18 * * 1-6"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        1104,
+        672
+      ],
+      "id": "5a2fac50-a412-4dc1-9d74-b819eaf8e6ec",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        64,
+        672
+      ],
+      "id": "88cef9b4-81ab-4b15-9d08-6aafce506211",
+      "name": "When clicking Execute workflow"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_GOOGLE_SHEET_ID",
+          "mode": "list"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1147553068,
+          "mode": "list",
+          "cachedResultName": "Employee Data"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Apollo Status": "DONE",
+            "Contact Name": "={{ $json.contact_name }}",
+            "Contact Title": "={{ $json.contact_title }}",
+            "Contact LinkedIn": "={{ $json.contact_linkedin }}",
+            "Contact Email": "={{ $json.contact_email }}",
+            "Company Name": "={{ $json.company_name }}"
+          },
+          "matchingColumns": [
+            "Company Name"
+          ],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        2768,
+        672
+      ],
+      "id": "429b2b96-0a71-435d-ad11-08a200b46012",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "",
+          "name": ""
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_GOOGLE_SHEET_ID",
+          "mode": "list"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 855400704,
+          "mode": "list",
+          "cachedResultName": "Linkedin Company"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "HM Enrichment",
+              "lookupValue": "=YES"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1680,
+        1008
+      ],
+      "id": "f40e3c5d-cd9d-4c6c-a78a-159802e5f075",
+      "name": "Get row(s) in sheet1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "",
+          "name": ""
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.apollo.io/api/v1/people/match",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-api-key",
+              "value": "YOUR_APOLLO_API_KEY"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "Cache-Control",
+              "value": "no-cache"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "linkedin_url",
+              "value": "={{ $json[\"Hiring manager url\"] }}"
+            },
+            {
+              "name": "reveal_personal_emails",
+              "value": "false"
+            },
+            {
+              "name": "reveal_phone_number",
+              "value": "false"
+            }
+          ]
+        },
+        "options": {
+          "batching": {
+            "batch": {
+              "batchSize": 1
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        2176,
+        1024
+      ],
+      "id": "493ba7cb-8a5e-47ec-8af3-884a9bb6c897",
+      "name": "HTTP Request2",
+      "retryOnFail": false,
+      "maxTries": null,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        1904,
+        1008
+      ],
+      "id": "167c7b50-6093-4993-9615-93227ba71046",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 * 9-18 * * 1-6"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        1440,
+        1008
+      ],
+      "id": "1df4223c-3edd-4b1f-a69d-4e25c1a56e5a",
+      "name": "Schedule Trigger1"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Map hiring-manager Apollo match into contact fields. See repo for full source."
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2432,
+        1024
+      ],
+      "id": "d0d2cb6e-a4c3-4a33-8f02-4fbaa63710fd",
+      "name": "Code in JavaScript4",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_GOOGLE_SHEET_ID",
+          "mode": "list"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1147553068,
+          "mode": "list",
+          "cachedResultName": "Employee Data"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Contact Name": "={{ $json.contact_name }}",
+            "Contact Title": "={{ $json.contact_title }}",
+            "Contact LinkedIn": "={{ $json.contact_linkedin }}",
+            "Company Name": "={{ $json.company_name }}",
+            "Contact Email": "={{ $json.contact_email }}",
+            "Apollo Status": "DONE"
+          },
+          "matchingColumns": [
+            "Contact LinkedIn"
+          ],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        2704,
+        1024
+      ],
+      "id": "263ac2c1-2e2a-4aac-a555-20a3ea96f40e",
+      "name": "Append or update row in sheet1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "",
+          "name": ""
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "Hiring Manager\n",
+        "height": 416,
+        "width": 1936,
+        "color": "#CE505D"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1264,
+        928
+      ],
+      "typeVersion": 1,
+      "id": "2f23302c-b5df-4343-9bff-6ba38602f591",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_GOOGLE_SHEET_ID",
+          "mode": "list"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 855400704,
+          "mode": "list",
+          "cachedResultName": "Linkedin Company"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Company Name": "={{ $('Loop Over Items2').item.json['Company Name'] }}",
+            "Apollo Status": "DONE"
+          },
+          "matchingColumns": [
+            "Company Name"
+          ],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        2976,
+        672
+      ],
+      "id": "32c846ec-f80a-488a-b065-e9d67e7bbc11",
+      "name": "Append or update row in sheet3",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "",
+          "name": ""
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_GOOGLE_SHEET_ID",
+          "mode": "list"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 855400704,
+          "mode": "list",
+          "cachedResultName": "Linkedin Company"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Company Name": "={{ $('Loop Over Items').item.json['Company Name'] }}",
+            "HM Enrichment": "DONE",
+            "Apollo Status": "DONE"
+          },
+          "matchingColumns": [
+            "Company Name"
+          ],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        2976,
+        1024
+      ],
+      "id": "e78128f4-55ce-413a-8370-5625a2eadd19",
+      "name": "Append or update row in sheet4",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "",
+          "name": ""
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        1520,
+        640
+      ],
+      "id": "371b220b-ce97-47b9-b008-79e03890a4a5",
+      "name": "Loop Over Items2"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 * 9-18 * * 1-6"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -432,
+        1648
+      ],
+      "id": "3d640ba0-7a11-429e-9d05-00b0a8131c75",
+      "name": "Schedule Trigger3"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_GOOGLE_SHEET_ID",
+          "mode": "list"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1147553068,
+          "mode": "list",
+          "cachedResultName": "Employee Data"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Email Sent ",
+              "lookupValue": "SENT"
+            },
+            {
+              "lookupColumn": "Replied?"
+            },
+            {
+              "lookupColumn": "Stop Reason"
+            },
+            {
+              "lookupColumn": "Sequence Stage",
+              "lookupValue": "1"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -144,
+        1648
+      ],
+      "id": "d5a6f6c7-5ca4-40bf-b090-c750fe3cb956",
+      "name": "Get row(s) in sheet4",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "",
+          "name": ""
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Filter follow-ups that are due today (IST). See repo for full source."
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        80,
+        1664
+      ],
+      "id": "b3039dc1-c5f7-4aff-8272-74ad5845ecbc",
+      "name": "Code in JavaScript9"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        384,
+        1648
+      ],
+      "id": "d1038108-cf53-44d6-9de9-fc03c6f477c4",
+      "name": "Loop Over Items3"
+    },
+    {
+      "parameters": {
+        "resource": "thread",
+        "operation": "get",
+        "threadId": "={{ $json['thread id'] }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        816,
+        1552
+      ],
+      "id": "14b2de5d-e489-4ed9-ba92-ce0e90c93cf4",
+      "name": "Get a thread",
+      "webhookId": "8e7e3282-af06-4249-a7d0-c35b03e83dad",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "",
+          "name": ""
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Detect bounce or reply in a Gmail thread. See repo for full source."
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1232,
+        1664
+      ],
+      "id": "cf4d988d-60bf-49dc-87c6-bb798a6d61ac",
+      "name": "Code in JavaScript10"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_GOOGLE_SHEET_ID",
+          "mode": "list"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1147553068,
+          "mode": "list",
+          "cachedResultName": "Employee Data"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Message ID (optional)": "={{ $json.id }}",
+            "Replied?": "yes",
+            "Stop Reason": "replied",
+            "Contact Email": "={{ $json[\"Contact Email\"] }}",
+            "Sequence Stage": "2"
+          },
+          "matchingColumns": [
+            "Contact Email"
+          ],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        2544,
+        1648
+      ],
+      "id": "68a4144b-1f91-4d0a-8398-a1b0230e475a",
+      "name": "Append or update row in sheet5",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "",
+          "name": ""
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "6730d337-863c-4b70-870e-52eebdaecba0",
+              "leftValue": "={{$json.replied}}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1680,
+        1696
+      ],
+      "id": "0f2d514e-870f-403d-a8ce-cf1917734c0f",
+      "name": "If5"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_GOOGLE_SHEET_ID",
+          "mode": "list"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1147553068,
+          "mode": "list",
+          "cachedResultName": "Employee Data"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Message ID (optional)": "={{ $json.id }}",
+            "Last Emailed At": "={{ new Date().toISOString().split('T')[0] }}",
+            "Next Follow-up At": "={{ new Date(Date.now() + 7*24*60*60*1000).toISOString().split('T')[0] }}",
+            "Sequence Stage": "1",
+            "Contact Email": "={{ $('Wait2').item.json[\"Contact Email\"] }}"
+          },
+          "matchingColumns": [
+            "Contact Email"
+          ],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        2576,
+        1840
+      ],
+      "id": "9d133d60-2cc8-4930-875b-2c1ee55d7d85",
+      "name": "Append or update row in sheet6",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "",
+          "name": ""
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_GOOGLE_SHEET_ID",
+          "mode": "list"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1147553068,
+          "mode": "list",
+          "cachedResultName": "Employee Data"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Message ID (optional)": "={{ $json.id }}",
+            "Last Emailed At": "={{ new Date().toISOString().split('T')[0] }}",
+            "Next Follow-up At": "={{ new Date(Date.now() + 7*24*60*60*1000).toISOString().split('T')[0] }}",
+            "Stop Reason": "Completed",
+            "Sequence Stage": "2",
+            "Contact Email": "={{ $('Wait3').item.json[\"Contact Email\"] }}"
+          },
+          "matchingColumns": [
+            "Contact Email"
+          ],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        2608,
+        2064
+      ],
+      "id": "2b09f6ff-67ad-404b-b792-afdca92129cb",
+      "name": "Append or update row in sheet7",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "",
+          "name": ""
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "typeValidation": "loose",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json[\"Sequence Stage\"] }}",
+                    "rightValue": "0",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "036499dd-97ec-42cc-b405-aa739f692216"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "typeValidation": "loose",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "2d458ab0-7a6c-4120-ae1c-30b20d4d78a5",
+                    "leftValue": "={{ $json[\"Sequence Stage\"] }}",
+                    "rightValue": 1,
+                    "operator": {
+                      "type": "number",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.3,
+      "position": [
+        1840,
+        1856
+      ],
+      "id": "17ebf767-e38b-4ce5-9465-8e5afb6d972e",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        1024,
+        1664
+      ],
+      "id": "d2105968-0e22-45b6-93af-81c24e91798c",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "e7025c89-4d73-4cdc-8817-7561a02b15c0",
+              "leftValue": "={{ $json.bounced }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1440,
+        1664
+      ],
+      "id": "fe04fb28-08cd-4800-8e5f-1de7bc755472",
+      "name": "If6"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_GOOGLE_SHEET_ID",
+          "mode": "list"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1147553068,
+          "mode": "list",
+          "cachedResultName": "Employee Data"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Message ID (optional)": "={{ $json.id }}",
+            "Stop Reason": "BOUNCED",
+            "Sequence Stage": "2",
+            "Contact Email": "={{ $json[\"Contact Email\"] }}"
+          },
+          "matchingColumns": [
+            "Contact Email"
+          ],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        2528,
+        1440
+      ],
+      "id": "08027132-cef2-40dd-abd8-56bfe7d51cc3",
+      "name": "Append or update row in sheet8",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "",
+          "name": ""
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json[\"Contact Email\"] }}",
+        "subject": "=Following up - {{ $json[\"Company Name\"] }}",
+        "message": "=<!DOCTYPE html>\n<html>\n  <body style=\"font-family: Arial, Helvetica, sans-serif; font-size:14px; color:#000; line-height:1.6;\">\n    <p>Hi {{ $json[\"Contact Name\"] }},</p>\n    <p>I'll keep this brief and make this my final note.</p>\n    <p>[ Short recap of value prop. If now isn't the right time, no worries at all. ]</p>\n    <p>If someone else owns hiring decisions at {{ $json[\"Company Name\"] }}, I'd appreciate being pointed in the right direction.</p>\n    <p>Best,<br/>[ Your Name ]<br/>[ Your Company ] &middot; [ your-email@example.com ]</p>\n  </body>\n</html>\n",
+        "options": {
+          "appendAttribution": false,
+          "senderName": "Your Name"
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        2304,
+        2064
+      ],
+      "id": "a3ab66f1-506c-42a8-8f11-46449f931bbb",
+      "name": "Send a message2",
+      "webhookId": "d64ad627-f700-4ac0-9ead-4a3abddb1e77",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "",
+          "name": ""
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "Followup Email Sender",
+        "height": 864,
+        "width": 3360,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -544,
+        1408
+      ],
+      "typeVersion": 1,
+      "id": "fa97cbed-c030-479b-a93d-1fa14045415b",
+      "name": "Sticky Note5"
+    },
+    {
+      "parameters": {
+        "resource": "thread",
+        "operation": "reply",
+        "threadId": "={{ $json['thread id'] }}",
+        "messageId": "={{ $json.id }}",
+        "emailType": "html",
+        "message": "=<!DOCTYPE html>\n<html>\n  <body style=\"font-family: Arial, Helvetica, sans-serif; font-size:14px; color:#000; line-height:1.6;\">\n    <p>Hi {{ $json[\"Contact Name\"] }},</p>\n    <p>Just following up on my note below.</p>\n    <p>[ One short paragraph of additional context or social proof. ]</p>\n    <p>Would it make sense to connect for a quick call?</p>\n    <p>Best,<br/>[ Your Name ]</p>\n  </body>\n</html>\n",
+        "options": {
+          "senderName": "Your Name",
+          "replyToRecipientsOnly": true
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        2288,
+        1824
+      ],
+      "id": "74a0cd0b-191a-41f0-8db0-aad6391f1cf6",
+      "name": "Reply to a message",
+      "webhookId": "d64ad627-f700-4ac0-9ead-4a3abddb1e77",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "",
+          "name": ""
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 3,
+        "unit": "minutes"
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        2080,
+        1760
+      ],
+      "id": "247dcef2-f2f7-48f0-a769-29f7832b8059",
+      "name": "Wait2",
+      "webhookId": "c220273b-ffe8-4963-98e1-5461e85c6f93"
+    },
+    {
+      "parameters": {
+        "amount": 3,
+        "unit": "minutes"
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        2080,
+        2080
+      ],
+      "id": "f0b2483a-0e16-49f3-ad44-be8b48dc1fed",
+      "name": "Wait3",
+      "webhookId": "1683984a-8133-48ab-a62d-a9be1d1980ca"
+    },
+    {
+      "parameters": {
+        "amount": 2
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        608,
+        1664
+      ],
+      "id": "bc9d92aa-98c1-49d3-af71-ced286edac3d",
+      "name": "Wait1",
+      "webhookId": "19491f08-a529-44a0-9059-427591d0be6e"
+    }
+  ],
+  "connections": {
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Append or update row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Run an Actor and get dataset": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript2": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Clean Domain": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request1": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript1": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger2": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet3": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields2": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message": {
+      "main": [
+        [
+          {
+            "node": "Append or update row in sheet2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Loop Over Items1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items1": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append or update row in sheet2": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking Execute workflow": {
+      "main": [
+        [
+          {
+            "node": "Run an Actor and get dataset",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append row in sheet": {
+      "main": [
+        [
+          {
+            "node": "Append or update row in sheet3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet1": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request2": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [],
+        [
+          {
+            "node": "HTTP Request2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger1": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript4": {
+      "main": [
+        [
+          {
+            "node": "Append or update row in sheet1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append or update row in sheet1": {
+      "main": [
+        [
+          {
+            "node": "Append or update row in sheet4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append or update row in sheet3": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append or update row in sheet4": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items2": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Clean Domain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger3": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet4": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript9",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript9": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items3": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Wait1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get a thread": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript10": {
+      "main": [
+        [
+          {
+            "node": "If6",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append or update row in sheet5": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If5": {
+      "main": [
+        [
+          {
+            "node": "Append or update row in sheet5",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append or update row in sheet6": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append or update row in sheet7": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Wait2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript10",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If6": {
+      "main": [
+        [
+          {
+            "node": "Append or update row in sheet8",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "If5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append or update row in sheet8": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message2": {
+      "main": [
+        [
+          {
+            "node": "Append or update row in sheet7",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Reply to a message": {
+      "main": [
+        [
+          {
+            "node": "Append or update row in sheet6",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait2": {
+      "main": [
+        [
+          {
+            "node": "Reply to a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait3": {
+      "main": [
+        [
+          {
+            "node": "Send a message2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait1": {
+      "main": [
+        [
+          {
+            "node": "Get a thread",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "meta": {
+    "templateCredsSetupCompleted": true
+  }
+}

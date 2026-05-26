@@ -1,0 +1,116 @@
+<svg viewBox="0 0 980 760" xmlns="http://www.w3.org/2000/svg" font-family="Helvetica, Arial, sans-serif">
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L8,3 L0,6 Z" fill="#5b6470"/>
+    </marker>
+    <style>
+      .stage { fill:#ffffff; stroke-width:1.5; rx:10; }
+      .s1 { stroke:#2f855a; } .s2 { stroke:#b7791f; } .s3 { stroke:#2b6cb0; } .s4 { stroke:#805ad5; }
+      .stagelabel { font-size:13px; font-weight:700; letter-spacing:.4px; }
+      .l1 { fill:#2f855a; } .l2 { fill:#b7791f; } .l3 { fill:#2b6cb0; } .l4 { fill:#805ad5; }
+      .node { fill:#f7fafc; stroke:#cbd5e0; stroke-width:1; }
+      .ntext { font-size:11px; fill:#2d3748; }
+      .edge { stroke:#5b6470; stroke-width:1.4; fill:none; marker-end:url(#arrow); }
+      .title { font-size:18px; font-weight:700; fill:#1a202c; }
+      .sub { font-size:11px; fill:#718096; }
+    </style>
+  </defs>
+
+  <text x="24" y="32" class="title">LinkedIn Lead-Gen &amp; Outreach Engine</text>
+  <text x="24" y="50" class="sub">n8n · Apify · Apollo.io · Gmail · Google Sheets</text>
+
+  <!-- STAGE 1 -->
+  <rect x="24" y="70" width="932" height="120" class="stage s1" rx="10"/>
+  <text x="40" y="92" class="stagelabel l1">STAGE 1 — SCRAPE LINKEDIN JOBS</text>
+  <rect x="40" y="104" width="120" height="64" class="node" rx="6"/>
+  <text x="100" y="132" class="ntext" text-anchor="middle">Trigger</text>
+  <text x="100" y="148" class="ntext" text-anchor="middle" fill="#718096">manual / cron</text>
+  <rect x="210" y="104" width="140" height="64" class="node" rx="6"/>
+  <text x="280" y="132" class="ntext" text-anchor="middle">Apify actor</text>
+  <text x="280" y="148" class="ntext" text-anchor="middle" fill="#718096">recent job posts</text>
+  <rect x="400" y="104" width="160" height="64" class="node" rx="6"/>
+  <text x="480" y="128" class="ntext" text-anchor="middle">Code: parse jobs</text>
+  <text x="480" y="144" class="ntext" text-anchor="middle" fill="#718096">title · exp · skills · HM url</text>
+  <rect x="610" y="104" width="160" height="64" class="node" rx="6"/>
+  <text x="690" y="132" class="ntext" text-anchor="middle">Google Sheet</text>
+  <text x="690" y="148" class="ntext" text-anchor="middle" fill="#718096">Job Data</text>
+  <line x1="160" y1="136" x2="208" y2="136" class="edge"/>
+  <line x1="350" y1="136" x2="398" y2="136" class="edge"/>
+  <line x1="560" y1="136" x2="608" y2="136" class="edge"/>
+
+  <!-- STAGE 2 -->
+  <rect x="24" y="206" width="932" height="200" class="stage s2" rx="10"/>
+  <text x="40" y="228" class="stagelabel l2">STAGE 2 — APOLLO PEOPLE FINDER</text>
+  <rect x="40" y="244" width="120" height="56" class="node" rx="6"/>
+  <text x="100" y="268" class="ntext" text-anchor="middle">Read pending</text>
+  <text x="100" y="284" class="ntext" text-anchor="middle" fill="#718096">companies</text>
+  <rect x="190" y="244" width="120" height="56" class="node" rx="6"/>
+  <text x="250" y="268" class="ntext" text-anchor="middle">Clean domain</text>
+  <text x="250" y="284" class="ntext" text-anchor="middle" fill="#718096">website → host</text>
+  <rect x="340" y="244" width="140" height="56" class="node" rx="6"/>
+  <text x="410" y="268" class="ntext" text-anchor="middle">Apollo search</text>
+  <text x="410" y="284" class="ntext" text-anchor="middle" fill="#718096">CEO/CTO/HR/TA</text>
+  <rect x="510" y="244" width="130" height="56" class="node" rx="6"/>
+  <text x="575" y="268" class="ntext" text-anchor="middle">Code: pick</text>
+  <text x="575" y="284" class="ntext" text-anchor="middle" fill="#718096">one per title</text>
+  <rect x="670" y="244" width="130" height="56" class="node" rx="6"/>
+  <text x="735" y="268" class="ntext" text-anchor="middle">Apollo match</text>
+  <text x="735" y="284" class="ntext" text-anchor="middle" fill="#718096">reveal email</text>
+  <rect x="828" y="244" width="112" height="56" class="node" rx="6"/>
+  <text x="884" y="268" class="ntext" text-anchor="middle">Sheet</text>
+  <text x="884" y="284" class="ntext" text-anchor="middle" fill="#718096">Employee Data</text>
+  <line x1="160" y1="272" x2="188" y2="272" class="edge"/>
+  <line x1="310" y1="272" x2="338" y2="272" class="edge"/>
+  <line x1="480" y1="272" x2="508" y2="272" class="edge"/>
+  <line x1="640" y1="272" x2="668" y2="272" class="edge"/>
+  <line x1="800" y1="272" x2="826" y2="272" class="edge"/>
+  <!-- parallel HM lane -->
+  <rect x="340" y="324" width="300" height="56" class="node" rx="6" stroke-dasharray="4 3"/>
+  <text x="490" y="348" class="ntext" text-anchor="middle">parallel: Hiring-Manager enrichment</text>
+  <text x="490" y="364" class="ntext" text-anchor="middle" fill="#718096">Apollo match by HM LinkedIn url → Employee Data</text>
+
+  <!-- STAGE 3 -->
+  <rect x="24" y="422" width="460" height="200" class="stage s3" rx="10"/>
+  <text x="40" y="444" class="stagelabel l3">STAGE 3 — EMAIL SENDER</text>
+  <rect x="40" y="460" width="180" height="50" class="node" rx="6"/>
+  <text x="130" y="489" class="ntext" text-anchor="middle">Read verified contacts</text>
+  <rect x="40" y="524" width="180" height="50" class="node" rx="6"/>
+  <text x="130" y="548" class="ntext" text-anchor="middle">Loop + Wait (throttle)</text>
+  <text x="130" y="564" class="ntext" text-anchor="middle" fill="#718096">protect reputation</text>
+  <rect x="270" y="460" width="190" height="50" class="node" rx="6"/>
+  <text x="365" y="489" class="ntext" text-anchor="middle">Send first-touch email</text>
+  <rect x="270" y="524" width="190" height="50" class="node" rx="6"/>
+  <text x="365" y="544" class="ntext" text-anchor="middle">Record thread id</text>
+  <text x="365" y="560" class="ntext" text-anchor="middle" fill="#718096">+ next-follow-up date</text>
+  <line x1="130" y1="510" x2="130" y2="522" class="edge"/>
+  <line x1="220" y1="549" x2="268" y2="535" class="edge"/>
+  <line x1="365" y1="510" x2="365" y2="522" class="edge"/>
+
+  <!-- STAGE 4 -->
+  <rect x="496" y="422" width="460" height="200" class="stage s4" rx="10"/>
+  <text x="512" y="444" class="stagelabel l4">STAGE 4 — FOLLOW-UP SENDER</text>
+  <rect x="512" y="460" width="180" height="50" class="node" rx="6"/>
+  <text x="602" y="484" class="ntext" text-anchor="middle">Read due follow-ups</text>
+  <text x="602" y="500" class="ntext" text-anchor="middle" fill="#718096">+ get Gmail thread</text>
+  <rect x="512" y="524" width="180" height="50" class="node" rx="6"/>
+  <text x="602" y="548" class="ntext" text-anchor="middle">Code: detect</text>
+  <text x="602" y="564" class="ntext" text-anchor="middle" fill="#718096">reply / bounce</text>
+  <rect x="722" y="460" width="218" height="50" class="node" rx="6"/>
+  <text x="831" y="484" class="ntext" text-anchor="middle">bounced → BOUNCED, stop</text>
+  <text x="831" y="500" class="ntext" text-anchor="middle">replied → mark, stop</text>
+  <rect x="722" y="524" width="218" height="50" class="node" rx="6"/>
+  <text x="831" y="544" class="ntext" text-anchor="middle">no reply → Switch on stage</text>
+  <text x="831" y="560" class="ntext" text-anchor="middle" fill="#718096">send next / final follow-up</text>
+  <line x1="602" y1="510" x2="602" y2="522" class="edge"/>
+  <line x1="692" y1="540" x2="720" y2="495" class="edge"/>
+  <line x1="692" y1="552" x2="720" y2="549" class="edge"/>
+
+  <!-- cross-stage flow arrows -->
+  <line x1="690" y1="168" x2="690" y2="206" class="edge"/>
+  <line x1="884" y1="300" x2="884" y2="392" class="edge"/>
+  <path d="M884,392 L884,410 L130,410 L130,458" class="edge"/>
+  <path d="M365,574 L365,600 L602,600 L602,458" class="edge" stroke-dasharray="4 3"/>
+
+  <text x="24" y="650" class="sub">Sheet columns (Apollo Status · Sequence Stage · Replied? · Stop Reason) act as the state machine — every stage reads by status and writes back, so runs are idempotent on a cron.</text>
+  <text x="24" y="690" class="sub">Sanitized reference export — all API keys, sheet IDs, actor IDs, and message copy replaced with placeholders.</text>
+</svg>
