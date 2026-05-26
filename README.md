@@ -24,4 +24,4 @@ _More coming soon._
 ## Contact
 
 Tushar Patil · AI Automation Engineer · Delhi NCR
-[LinkedIn](https://www.linkedin.com/in/) · tusharpatil.w2001@gmail.com
+[LinkedIn](https://www.linkedin.com/in/tushar-patil47) · tusharpatil.w2001@gmail.com
